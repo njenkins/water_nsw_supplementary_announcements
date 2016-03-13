@@ -15,8 +15,8 @@ function initDatabase(callback) {
 
 function updateRow(db, values) {
 	// Insert some data.
-	var statement = db.prepare("INSERT INTO data(title, url) VALUES (?)");
-	statement.run(values[0]+','+values[1]);
+	var statement = db.prepare("INSERT INTO data(title, url) VALUES (?, ?)");
+	statement.run(values);
 	statement.finalize();
 }
 
