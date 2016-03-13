@@ -8,7 +8,7 @@ function initDatabase(callback) {
 	// Set up sqlite database.
 	var db = new sqlite3.Database("data.sqlite");
 	db.serialize(function() {
-		db.run("CREATE TABLE IF NOT EXISTS data (name TEXT)");
+		db.run("CREATE TABLE IF NOT EXISTS data (title TEXT)");
 		callback(db);
 	});
 }
@@ -22,8 +22,8 @@ function updateRow(db, value) {
 
 function readRows(db) {
 	// Read some data.
-	db.each("SELECT rowid AS id, name FROM data", function(err, row) {
-		console.log(row.id + ": " + row.name);
+	db.each("SELECT rowid AS id, title FROM data", function(err, row) {
+		console.log(row.id + ": " + row.title);
 	});
 }
 
