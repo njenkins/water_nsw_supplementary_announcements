@@ -7,15 +7,17 @@ function initDatabase(callback) {
 	// Set up sqlite database.
 	var db = new sqlite3.Database("data.sqlite");
 	db.serialize(function() {
-		db.run("CREATE TABLE data (title TEXT, url TEXT)");
+		db.run("CREATE TABLE IF NOT EXISTS data (title TEXT, url TEXT)");
 		callback(db);
 	});
 }
 
-function updateRow(db, value) {
+function updateRow(db, values) {
 	// Insert some data.
-	var statement = db.prepare("INSERT INTO data VALUES (?)");
-	statement.run(value);
+	var statement = db.prepare("INSERT INTO data(title, url) VALUES (?)");
+	for(var i = 0; i < values.length; i++){
+		statement.run(values[i]);
+	}
 	statement.finalize();
 }
 
@@ -46,7 +48,8 @@ function run(db) {
 		var elements = $(".related-box ul .heading a").each(function () {
 			var title = $(this).text().trim();
 			var url = $(this).attr('href');
-			updateRow(db, title);
+			var values = [title, url];
+			updateRow(db, values);
 		});
 
 		readRows(db);
