@@ -16,9 +16,7 @@ function initDatabase(callback) {
 function updateRow(db, values) {
 	// Insert some data.
 	var statement = db.prepare("INSERT INTO data(title, url) VALUES (?)");
-	for(var i = 0; i < values.length; i++){
-		statement.run(values[i]);
-	}
+	statement.run(values[0]+','+values[1]);
 	statement.finalize();
 }
 
@@ -50,7 +48,10 @@ function run(db) {
 			var title = $(this).text().trim();
 			var url = $(this).attr('href');
 			var values = [title, url];
-			updateRow(db, values);
+			//If scraped details lack text or a url, ignore.
+			if(values.length == 2){
+				updateRow(db, values);
+			}
 		});
 
 		readRows(db);
