@@ -1,5 +1,4 @@
 // This is a template for a Node.js scraper on morph.io (https://morph.io)
-
 var cheerio = require("cheerio");
 var request = require("request");
 var sqlite3 = require("sqlite3").verbose();
@@ -8,7 +7,7 @@ function initDatabase(callback) {
 	// Set up sqlite database.
 	var db = new sqlite3.Database("data.sqlite");
 	db.serialize(function() {
-		db.run("CREATE TABLE IF NOT EXISTS data (title TEXT)");
+		db.run("CREATE TABLE data (title TEXT, url TEXT)");
 		callback(db);
 	});
 }
@@ -22,8 +21,8 @@ function updateRow(db, value) {
 
 function readRows(db) {
 	// Read some data.
-	db.each("SELECT rowid AS id, title FROM data", function(err, row) {
-		console.log(row.id + ": " + row.title);
+	db.each("SELECT rowid AS id, title, url FROM data", function(err, row) {
+		console.log(row.id + ": " + row.title + ': ' + row.url);
 	});
 }
 
@@ -44,10 +43,10 @@ function run(db) {
 	fetchPage("http://www.waternsw.com.au/customer-service/news/supplementary", function (body) {
 		// Use cheerio to find things in the page with css selectors.
 		var $ = cheerio.load(body);
-
 		var elements = $(".related-box ul .heading a").each(function () {
-			var value = $(this).text().trim();
-			updateRow(db, value);
+			var title = $(this).text().trim();
+			var url = $(this).attr('href');
+			updateRow(db, title);
 		});
 
 		readRows(db);
