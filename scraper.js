@@ -41,11 +41,11 @@ function fetchPage(url, callback) {
 
 function run(db) {
 	// Use request to read in pages.
-	fetchPage("https://morph.io", function (body) {
+	fetchPage("http://www.waternsw.com.au/customer-service/news/supplementary", function (body) {
 		// Use cheerio to find things in the page with css selectors.
 		var $ = cheerio.load(body);
 
-		var elements = $("div.media-body span.p-name").each(function () {
+		var elements = $(".related-box ul .heading a").each(function () {
 			var value = $(this).text().trim();
 			updateRow(db, value);
 		});
