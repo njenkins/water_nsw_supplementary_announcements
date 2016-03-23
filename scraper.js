@@ -8,7 +8,7 @@ function initDatabase(callback) {
 	var db = new sqlite3.Database("data.sqlite");
 	db.serialize(function() {
 		resetTable(db);
-		db.run("CREATE TABLE IF NOT EXISTS data (title TEXT, url TEXT, year INTEGER, daymonth STRING)");
+		db.run("CREATE TABLE IF NOT EXISTS data (title TEXT, url TEXT, year INTEGER, daymonth STRING, timestamp STRING)");
 		callback(db);
 	});
 }
@@ -18,15 +18,15 @@ function resetTable(db){
 }
 function updateRow(db, values) {
 	// Insert some data.
-	var statement = db.prepare("INSERT INTO data(title, url, year, daymonth) VALUES (?, ?, ?, ?)");
+	var statement = db.prepare("INSERT INTO data(title, url, year, daymonth, timestamp) VALUES (?, ?, ?, ?, ?)");
 	statement.run(values);
 	statement.finalize();
 }
 
 function readRows(db) {
 	// Read some data.
-	db.each("SELECT rowid AS id, title, url, year, daymonth FROM data", function(err, row) {
-		console.log(row.daymonth + ' ' + row.year);
+	db.each("SELECT rowid AS id, title, url, year, daymonth, timestamp FROM data", function(err, row) {
+		console.log(row.daymonth + ' ' + row.year + ': '+ row.timestamp);
 		//console.log(row.id + ": " + row.title + ': ' + row.url + ': ' + row.daymonth +' ' + row.year);
 	});
 }
@@ -63,8 +63,13 @@ function run(db) {
 
 			var url = $link.attr('href');
 			var year = parseInt($link.closest('.related-box').find('h2').text());
-			var daymonth = 'test';
-			var values = [title, url, year, dayMonth];
+			//If able to parse out at least a month and a year, assign a timestamp
+			var timestamp;
+			if(dayMonth){
+					timestamp = new Date(dayMonth + ' ' + year);
+			}
+
+			var values = [title, url, year, dayMonth, timestamp];
 			updateRow(db, values);
 
 		});
